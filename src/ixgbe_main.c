@@ -3544,6 +3544,14 @@ static void ixgbe_setup_mrqc(struct ixgbe_adapter *adapter)
 	u32 mrqc = 0, rss_field = 0;
 	u32 vfmrqc = 0;
 
+    static uint8_t default_rsskey_40bytes[40] = {
+        0xd1, 0x81, 0xc6, 0x2c, 0xf7, 0xf4, 0xdb, 0x5b,
+        0x19, 0x83, 0xa2, 0xfc, 0x94, 0x3e, 0x1a, 0xdb,
+        0xd9, 0x38, 0x9e, 0x6b, 0xd1, 0x03, 0x9c, 0x2c,
+        0xa7, 0x44, 0x99, 0xad, 0x59, 0x3d, 0x56, 0xd9,
+        0xf3, 0x25, 0x3c, 0x06, 0x2a, 0xdc, 0x1f, 0xfc
+    };
+    
 	/* Disable indicating checksum in descriptor, enables RSS hash */
 	rxcsum = IXGBE_READ_REG(hw, IXGBE_RXCSUM);
 	rxcsum |= IXGBE_RXCSUM_PCSD;
@@ -3590,6 +3598,7 @@ static void ixgbe_setup_mrqc(struct ixgbe_adapter *adapter)
 		rss_field |= IXGBE_MRQC_RSS_FIELD_IPV6_UDP;
 
 	netdev_rss_key_fill(adapter->rss_key, sizeof(adapter->rss_key));
+    memcpy(adapter->rss_key, default_rsskey_40bytes, 40);
 	if ((hw->mac.type >= ixgbe_mac_X550) &&
 	    (adapter->flags & IXGBE_FLAG_SRIOV_ENABLED)) {
 		unsigned int pf_pool = adapter->num_vfs;
